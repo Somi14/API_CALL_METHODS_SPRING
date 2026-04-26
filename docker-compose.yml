@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+
+  api-feign-client:
+    build: ./API_Feign_Client        # where to find the Dockerfile
+    container_name: api-feign-client
+    ports:
+      - "8081:8081"                  # host:container
+
+  api-calling:
+    build: ./API_Calling
+    container_name: api-calling
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api-feign-client             # start feign-client first
+    environment:
+      # override the hardcoded localhost URL — inside Docker, services
+      # talk to each other by container name, not localhost
+      - FEIGN_CLIENT_URL=http://api-feign-client:8081
